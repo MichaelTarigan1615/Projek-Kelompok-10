@@ -1,0 +1,9 @@
+body{
+    background-color: #000000;
+}
+
+canvas {
+    background-image: url('images.png'); 
+    display: block;
+    margin: 0 auto;
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Adventure</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Space Adventure</h1>
+    <h3>Score: <span id="score">0</span></h3>
+    
+    <div id="main">
+        <div id="area">
+            <div id="plane"></div>
+            <div id="meteor"></div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let moving = true;
+
+        function setBackgroundMoving() {
+            if (!moving) return;
+
+            let bg = document.getElementById("main");
+            let bgPos = parseInt(window.getComputedStyle(bg).backgroundPositionY) || 0;
+            bg.style.backgroundPositionY = (bgPos + 1) + "px";
+
+            document.getElementById("score").innerHTML = score++;
+            setTimeout(setBackgroundMoving, 5);
+        }
+
+        window.addEventListener("keydown", function(e) {
+            let plane = document.getElementById("plane");
+            let left = parseInt(window.getComputedStyle(plane).marginLeft) || 0;
+            let top = parseInt(window.getComputedStyle(plane).marginTop) || 0;
+
+            if (e.keyCode === 37 && left > 0) {
+                plane.style.marginLeft = (left - 10) + "px"; 
+            }
+            if (e.keyCode === 38 && top > 0) {
+                plane.style.marginTop = (top - 10) + "px"; 
+            }
+            if (e.keyCode === 39 && left < 340) {
+                plane.style.marginLeft = (left + 10) + "px"; 
+            }
+            if (e.keyCode === 40 && top < 400) {
+                plane.style.marginTop = (top + 10) + "px"; 
+            }
+        });
+
+        function setMeteorMoving() {
+            if (!moving) return;
+
+            let meteor = document.getElementById("meteor");
+            let top = parseInt(window.getComputedStyle(meteor).marginTop) || -100;
+            let left = Math.floor(Math.random() * 250);
+
+            meteor.style.marginLeft = left + "px";
+            meteor.style.marginTop = (top + 1) + "px";
+
+            if (top > 500) {
+                meteor.style.marginTop = "-100px";
+            }
+
+            checkCollision();
+            setTimeout(setMeteorMoving, 1);
+        }
+
+        function checkCollision() {
+            let meteor = document.getElementById("meteor");
+            let plane = document.getElementById("plane");
+
+            let meteorTop = meteor.offsetTop;
+            let meteorLeft = meteor.offsetLeft;
+            let planeTop = plane.offsetTop;
+            let planeLeft = plane.offsetLeft;
+
+            if (meteorTop + 56 > planeTop && meteorTop < planeTop + 100 &&
+                meteorLeft + 56 > planeLeft && meteorLeft < planeLeft + 58) {
+                moving = false;
+                alert("Game Over! Score: " + score);
+            }
+        }
+
+        setBackgroundMoving();
+        setMeteorMoving();
+    </script>
+</body>
+</html>

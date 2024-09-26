@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <style>
+        body {
+            text-align: center;
+            margin-top: 50px;
+        }
+        canvas {
+            background-color: #7182d8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Snake Game</h1>
+    <canvas id="gameCanvas" width="1000" height="1000"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const box = 20;
+        
+
+        let snake = [];
+        snake[0] = { x: 9 * box, y: 10 * box };  
+        snake[1] = { x: 8 * box, y: 10 * box };  
+        snake[2] = { x: 7 * box, y: 10 * box }; 
+        snake[3] = { x: 6 * box, y: 10 * box }; 
+        snake[4] = { x: 5 * box, y: 10 * box };  
+
+        let food = {
+            x: Math.floor(Math.random() * 19 + 1) * box,
+            y: Math.floor(Math.random() * 19 + 1) * box
+        };
+
+        let score = 0;
+        let d;
+        let gameStarted = false;
+
+        let speed = 150;
+        let minSpeed = 10; 
+        let speedIncrease = 2.5; 
+
+        document.addEventListener('keydown', direction);
+
+        function direction(event) {
+            if (event.keyCode === 37 && d !== "RIGHT") {
+                d = "LEFT";
+                gameStarted = true;
+            } else if (event.keyCode === 38 && d !== "DOWN") {
+                d = "UP";
+                gameStarted = true;
+            } else if (event.keyCode === 39 && d !== "LEFT") {
+                d = "RIGHT";
+                gameStarted = true;
+            } else if (event.keyCode === 40 && d !== "UP") {
+                d = "DOWN";
+                gameStarted = true;
+            }
+        }
+
+        function collision(head, array) {
+            for (let i = 0; i < array.length; i++) {
+                if (head.x === array[i].x && head.y === array[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function increaseSpeed() {
+          
+            if (speed > minSpeed) {
+                speed -= speedIncrease;
+            }
+            clearInterval(game); 
+            game = setInterval(drawGame, speed);  
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < snake.length; i++) {
+                if (i%2==0)
+                {
+                    ctx.fillStyle = (i === 0) ? 'brown' : 'black' ;
+                    ctx.fillRect(snake[i].x, snake[i].y, box, box)
+                }
+                else 
+                {
+                    ctx.fillStyle = (i === 0) ? 'brown' : 'green' ;
+                    ctx.fillRect(snake[i].x, snake[i].y, box, box)
+                }
+                ;
+            }
+
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x, food.y, box, box);
+
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if (d) {
+                if (d === "LEFT") snakeX -= box;
+                if (d === "UP") snakeY -= box;
+                if (d === "RIGHT") snakeX += box;
+                if (d === "DOWN") snakeY += box;
+            }
+
+            if (snakeX === food.x && snakeY === food.y) {
+                score++;
+                food = {
+                    x: Math.floor(Math.random() * 40 + 1) * box,
+                    y: Math.floor(Math.random() * 40 + 1) * box
+                };
+
+                increaseSpeed();
+            } else {
+                snake.pop();
+            }
+
+            let newHead = {
+                x: snakeX,
+                y: snakeY
+            };
+
+            if (gameStarted && (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake))) {
+                clearInterval(game);
+                alert('Game Over! Your Score: ' + score);
+            }
+
+            snake.unshift(newHead);
+
+            ctx.fillStyle = 'black';
+            ctx.font = '45px Changa one';
+            ctx.fillText(score, 2 * box, 1.5 * box);
+        }
+
+        let game = setInterval(drawGame, speed);
+
+    </script>
+
+</body>
+</html>
